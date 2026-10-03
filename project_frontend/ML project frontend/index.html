@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CropWise — Smart Crop Recommendation</title>
+<meta name="description" content="A machine-learning-based crop recommendation interface using soil and environmental data." />
+
+<!-- Fonts: Fraunces (display) for warmth + character, Inter (UI/body) for clarity -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="#home" class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+          <path d="M12 21c-4.5 0-7.5-3-7.5-7.5C4.5 8 8 4 12 3c4 1 7.5 5 7.5 10.5C19.5 18 16.5 21 12 21Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M12 21V9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </span>
+      CropWise
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="navLinks">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="nav-links" id="navLinks">
+      <a href="#home" class="nav-link">Home</a>
+      <a href="#recommend" class="nav-link">Recommend</a>
+      <a href="#how-it-works" class="nav-link">How It Works</a>
+      <a href="#performance" class="nav-link">Performance</a>
+      <a href="#about" class="nav-link">About</a>
+      <a href="#recommend" class="btn btn-primary btn-nav">Get Recommendation</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="home">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="kicker">Multinomial Logistic Regression</p>
+      <h1 class="hero-title">
+        Smart Crop<br>
+        Recommendation<br>
+        <span class="hero-title-accent">Powered by Data</span>
+      </h1>
+      <p class="hero-sub">
+        Make smarter agricultural decisions using
+        soil and environmental conditions.
+      </p>
+      <div class="hero-actions">
+        <a href="#recommend" class="btn btn-primary btn-lg">Get Recommendation</a>
+        <a href="#how-it-works" class="btn btn-ghost btn-lg">Explore How It Works</a>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <svg class="soil-svg" viewBox="0 0 460 460" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#173B2C"/>
+            <stop offset="100%" stop-color="#0F2A20"/>
+          </linearGradient>
+          <linearGradient id="topsoilGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3E7B57"/>
+            <stop offset="100%" stop-color="#2B5C40"/>
+          </linearGradient>
+          <linearGradient id="subsoilGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4A3423"/>
+            <stop offset="100%" stop-color="#2A1E13"/>
+          </linearGradient>
+          <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#D9A441" stop-opacity="0.55"/>
+            <stop offset="100%" stop-color="#D9A441" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <rect x="0" y="0" width="460" height="230" fill="url(#skyGrad)"/>
+        <circle class="glow-orb" cx="345" cy="95" r="70" fill="url(#glow)"/>
+
+        <!-- ambient drifting leaves -->
+        <ellipse class="drift-leaf lf1" cx="52" cy="140" rx="7" ry="3.5" fill="#8FC7A2" opacity="0.7" transform="rotate(-30 52 140)"/>
+        <ellipse class="drift-leaf lf2" cx="410" cy="170" rx="6" ry="3" fill="#D9A441" opacity="0.55" transform="rotate(18 410 170)"/>
+        <ellipse class="drift-leaf lf3" cx="150" cy="55" rx="6" ry="3" fill="#B7E0C4" opacity="0.6" transform="rotate(-10 150 55)"/>
+
+        <!-- horizon line / plant -->
+        <g class="sway-group">
+          <path class="stem-draw" d="M230 230 C 225 180, 240 150, 232 108" stroke="#8FC7A2" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path class="stem-draw" d="M232 150 C 210 140, 198 150, 196 168" stroke="#8FC7A2" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path class="stem-draw" d="M232 130 C 254 122, 264 132, 266 148" stroke="#8FC7A2" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <ellipse class="leaf-pop lp1" cx="196" cy="164" rx="14" ry="7" fill="#8FC7A2" transform="rotate(-24 196 164)"/>
+          <ellipse class="leaf-pop lp2" cx="266" cy="144" rx="14" ry="7" fill="#8FC7A2" transform="rotate(20 266 144)"/>
+          <ellipse class="leaf-pop lp3" cx="230" cy="104" rx="12" ry="16" fill="#B7E0C4"/>
+        </g>
+
+        <!-- soil layers -->
+        <rect x="0" y="230" width="460" height="120" fill="url(#topsoilGrad)"/>
+        <rect x="0" y="350" width="460" height="110" fill="url(#subsoilGrad)"/>
+        <line x1="0" y1="230" x2="460" y2="230" stroke="#0F2A20" stroke-width="2"/>
+        <line x1="0" y1="350" x2="460" y2="350" stroke="#20160D" stroke-width="2"/>
+
+        <!-- root -->
+        <path d="M230 230 C 226 260, 236 270, 224 296 C 216 314, 232 322, 224 344" stroke="#D9A441" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
+
+        <!-- floating data particles -->
+        <circle class="float-dot d1" cx="70" cy="70" r="3.5" fill="#D9A441"/>
+        <circle class="float-dot d2" cx="380" cy="60" r="2.5" fill="#B7E0C4"/>
+        <circle class="float-dot d3" cx="130" cy="120" r="2" fill="#D9A441"/>
+        <circle class="float-dot d4" cx="330" cy="140" r="3" fill="#B7E0C4"/>
+
+        <!-- data chip callouts -->
+        <g class="chip chip-n">
+          <rect x="24" y="256" width="72" height="34" rx="8" fill="#2A1E13" stroke="#A9713F"/>
+          <text x="60" y="277" text-anchor="middle" class="chip-text">N · 90</text>
+        </g>
+        <g class="chip chip-p">
+          <rect x="356" y="290" width="76" height="34" rx="8" fill="#2A1E13" stroke="#A9713F"/>
+          <text x="394" y="311" text-anchor="middle" class="chip-text">P · 42</text>
+        </g>
+        <g class="chip chip-ph">
+          <rect x="300" y="378" width="88" height="34" rx="8" fill="#20160D" stroke="#4A3423"/>
+          <text x="344" y="399" text-anchor="middle" class="chip-text">pH · 6.5</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- HERO STATS -->
+  <div class="hero-stats">
+    <div class="stat-card">
+      <span class="stat-num" id="heroFeatureCount">0</span>
+      <span class="stat-label">Input Features</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">Multi-Class</span>
+      <span class="stat-label">Classification</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">ML Powered</span>
+      <span class="stat-label">Recommendation</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">Data-Driven</span>
+      <span class="stat-label">Decisions</span>
+    </div>
+  </div>
+</header>
+
+<!-- ================= CROP RECOMMENDATION ================= -->
+<section class="section" id="recommend">
+  <div class="section-inner">
+    <div class="section-head">
+      <h2>Find the Right Crop<br>for Your Conditions</h2>
+      <p>Enter your soil and environmental conditions to get a data-driven crop recommendation.</p>
+    </div>
+
+    <div class="form-card">
+      <form id="cropForm" novalidate>
+        <div class="input-grid">
+
+          <div class="field">
+            <label for="nitrogen">Nitrogen (N) <span class="unit">kg/ha</span></label>
+            <div class="field-control">
+              <input type="number" id="nitrogen" name="nitrogen" placeholder="e.g. 90" step="any" aria-describedby="nitrogen-error" />
+              <button type="button" class="info-btn" data-tip="Amount of nitrogen present in the soil. Supports leaf and stem growth.">i</button>
+            </div>
+            <p class="field-error" id="nitrogen-error" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label for="phosphorus">Phosphorus (P) <span class="unit">kg/ha</span></label>
+            <div class="field-control">
+              <input type="number" id="phosphorus" name="phosphorus" placeholder="e.g. 40" step="any" aria-describedby="phosphorus-error" />
+              <button type="button" class="info-btn" data-tip="Amount of phosphorus present in the soil. Supports root and flower development.">i</button>
+            </div>
+            <p class="field-error" id="phosphorus-error" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label for="potassium">Potassium (K) <span class="unit">kg/ha</span></label>
+            <div class="field-control">
+              <input type="number" id="potassium" name="potassium" placeholder="e.g. 40" step="any" aria-describedby="potassium-error" />
+              <button type="button" class="info-btn" data-tip="Amount of potassium present in the soil. Improves plant resilience.">i</button>
+            </div>
+            <p class="field-error" id="potassium-error" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label for="temperature">Temperature <span class="unit">°C</span></label>
+            <div class="field-control">
+              <input type="number" id="temperature" name="temperature" placeholder="e.g. 25" step="any" aria-describedby="temperature-error" />
+              <button type="button" class="info-btn" data-tip="Average environmental temperature for the growing period.">i</button>
+            </div>
+            <p class="field-error" id="temperature-error" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label for="humidity">Humidity <span class="unit">%</span></label>
+            <div class="field-control">
+              <input type="number" id="humidity" name="humidity" placeholder="e.g. 80" step="any" aria-describedby="humidity-error" />
+              <button type="button" class="info-btn" data-tip="Relative atmospheric moisture level.">i</button>
+            </div>
+            <p class="field-error" id="humidity-error" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label for="ph">Soil pH</label>
+            <div class="field-control">
+              <input type="number" id="ph" name="ph" placeholder="e.g. 6.5" step="any" aria-describedby="ph-error" />
+              <button type="button" class="info-btn" data-tip="Acidity or alkalinity of the soil, on a 0–14 scale.">i</button>
+            </div>
+            <p class="field-error" id="ph-error" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label for="rainfall">Rainfall <span class="unit">mm</span></label>
+            <div class="field-control">
+              <input type="number" id="rainfall" name="rainfall" placeholder="e.g. 200" step="any" aria-describedby="rainfall-error" />
+              <button type="button" class="info-btn" data-tip="Total precipitation available during the growing period.">i</button>
+            </div>
+            <p class="field-error" id="rainfall-error" role="alert"></p>
+          </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="recommendBtn">
+          <span class="btn-leaf" aria-hidden="true">🌱</span> Recommend Crop
+        </button>
+      </form>
+
+      <!-- Loading state -->
+      <div class="loading-state" id="loadingState" hidden>
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Analyzing soil and environmental conditions…</p>
+      </div>
+    </div>
+
+    <!-- RESULT AREA -->
+    <div class="result-area" id="resultArea" hidden>
+
+      <div class="result-card" id="resultCard">
+        <p class="result-kicker">Your Recommendation</p>
+        <div class="result-crop">
+          <span class="result-emoji" id="resultEmoji">🌾</span>
+          <span class="result-name" id="resultName">RICE</span>
+        </div>
+        <div class="confidence-ring-wrap">
+          <div class="confidence-ring" id="confidenceRing">
+            <span class="confidence-num" id="confidenceNum">72%</span>
+          </div>
+          <span class="confidence-label">Confidence</span>
+        </div>
+        <p class="result-note" id="resultNote">
+          Based on the conditions you provided, this crop has the highest predicted probability.
+        </p>
+        <button type="button" class="btn btn-ghost" id="tryAnotherBtn">Try Another</button>
+      </div>
+
+      <div class="side-cards">
+        <div class="prob-card">
+          <h3>Prediction Probabilities</h3>
+          <div class="prob-bars" id="probBars"><!-- generated by JS --></div>
+        </div>
+
+        <div class="summary-card">
+          <h3>Your Conditions</h3>
+          <dl class="summary-list" id="summaryList"><!-- generated by JS --></dl>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="section section-alt" id="how-it-works">
+  <div class="section-inner">
+    <div class="section-head">
+      <h2>How CropWise Works</h2>
+      <p>From raw field readings to a single recommended crop, in five steps.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <h3>Enter Conditions</h3>
+        <p>User provides soil and environmental data.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <h3>Process Features</h3>
+        <p>The values are prepared for the machine-learning model.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <h3>Analyze with ML</h3>
+        <p>Multinomial Logistic Regression calculates probabilities for different crops.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">04</span>
+        <h3>Compare Probabilities</h3>
+        <p>The system identifies the crop with the highest probability.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">05</span>
+        <h3>Get Recommendation</h3>
+        <p>The highest-probability crop is displayed.</p>
+      </div>
+    </div>
+
+    <!-- MATHEMATICAL EXPLANATION -->
+    <div class="math-card">
+      <h3>Behind the Prediction</h3>
+      <p class="math-intro">For each crop <em>k</em>, the model calculates a score from the input features:</p>
+      <div class="formula">Z<sub>k</sub> = b<sub>k</sub> + Σᵢ w<sub>ik</sub> x<sub>i</sub></div>
+      <p class="math-intro">The scores are converted into probabilities with the Softmax function:</p>
+      <div class="formula">P(y = k | X) = e<sup>Z<sub>k</sub></sup> ⁄ Σⱼ e<sup>Z<sub>j</sub></sup></div>
+      <p class="math-intro">The crop with the highest probability is returned:</p>
+      <div class="formula">ŷ = argmax<sub>k</sub> P(y = k | X)</div>
+      <p class="math-footnote">
+        The model learns the weights from agricultural training data and recommends
+        the crop with the highest predicted probability.
+      </p>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="section-head section-head-sm">
+      <h2>What Does the Model Analyze?</h2>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <span class="feature-icon" aria-hidden="true">N</span>
+        <h4>Nitrogen</h4>
+        <p>Nutrient availability in soil.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon" aria-hidden="true">P</span>
+        <h4>Phosphorus</h4>
+        <p>Supports root and plant development.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon" aria-hidden="true">K</span>
+        <h4>Potassium</h4>
+        <p>Important for plant growth and resilience.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon" aria-hidden="true">°C</span>
+        <h4>Temperature</h4>
+        <p>Environmental temperature conditions.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon" aria-hidden="true">%</span>
+        <h4>Humidity</h4>
+        <p>Atmospheric moisture level.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon" aria-hidden="true">pH</span>
+        <h4>Soil pH</h4>
+        <p>Soil acidity/alkalinity.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon" aria-hidden="true">mm</span>
+        <h4>Rainfall</h4>
+        <p>Available precipitation.</p>
+      </div>
+    </div>
+
+    <!-- FEATURE INFLUENCE ON CROP GROWTH -->
+    <div class="section-head section-head-sm" id="feature-influence">
+      <h2>How Each Feature Influences Crop Growth</h2>
+      <p>What each measurement actually does inside a growing plant, beyond just being a model input.</p>
+    </div>
+    <div class="influence-grid">
+      <div class="influence-card">
+        <div class="influence-head">
+          <h4>Nitrogen</h4>
+          <span class="influence-level">High influence</span>
+        </div>
+        <p>Fuels leafy, vegetative growth by supporting chlorophyll production. Too little stunts growth; too much can delay flowering and fruiting.</p>
+        <div class="influence-meter"><span class="filled"></span><span class="filled"></span><span class="filled"></span></div>
+      </div>
+      <div class="influence-card">
+        <div class="influence-head">
+          <h4>Phosphorus</h4>
+          <span class="influence-level">High influence</span>
+        </div>
+        <p>Establishes strong root systems and supports flowering and seed formation, especially early in a crop's life cycle.</p>
+        <div class="influence-meter"><span class="filled"></span><span class="filled"></span><span class="filled"></span></div>
+      </div>
+      <div class="influence-card">
+        <div class="influence-head">
+          <h4>Potassium</h4>
+          <span class="influence-level">Medium influence</span>
+        </div>
+        <p>Helps regulate water movement within the plant, strengthens stems, and improves resistance to disease and drought.</p>
+        <div class="influence-meter"><span class="filled"></span><span class="filled"></span><span></span></div>
+      </div>
+      <div class="influence-card">
+        <div class="influence-head">
+          <h4>Temperature</h4>
+          <span class="influence-level">High influence</span>
+        </div>
+        <p>Sets the pace for germination, photosynthesis, and enzyme activity. Each crop has an optimal range outside of which growth slows.</p>
+        <div class="influence-meter"><span class="filled"></span><span class="filled"></span><span class="filled"></span></div>
+      </div>
+      <div class="influence-card">
+        <div class="influence-head">
+          <h4>Humidity</h4>
+          <span class="influence-level">Medium influence</span>
+        </div>
+        <p>Influences transpiration and water loss. High humidity can raise fungal disease risk; low humidity increases water stress.</p>
+        <div class="influence-meter"><span class="filled"></span><span class="filled"></span><span></span></div>
+      </div>
+      <div class="influence-card">
+        <div class="influence-head">
+          <h4>Soil pH</h4>
+          <span class="influence-level">Medium influence</span>
+        </div>
+        <p>Determines how easily roots can access nutrients already in the soil. Most nutrients are most available in a near-neutral range.</p>
+        <div class="influence-meter"><span class="filled"></span><span class="filled"></span><span></span></div>
+      </div>
+      <div class="influence-card">
+        <div class="influence-head">
+          <h4>Rainfall</h4>
+          <span class="influence-level">High influence</span>
+        </div>
+        <p>Supplies the water needed to transport nutrients and support cell growth. Too little causes drought stress; too much can cause waterlogging.</p>
+        <div class="influence-meter"><span class="filled"></span><span class="filled"></span><span class="filled"></span></div>
+      </div>
+    </div>
+    <p class="influence-footnote">
+      These reflect general agronomic patterns, not this specific model's learned weights — a trained
+      classifier may end up relying on some of these features more than others, depending on the dataset.
+    </p>
+
+    <!-- ML CONCEPTS & COURSE OUTCOMES -->
+    <div class="section-head section-head-sm" id="ml-concepts">
+      <h2>ML Concepts &amp; Course Outcomes</h2>
+      <p>How this project's design connects back to the course's learning outcomes.</p>
+    </div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <span class="concept-tag">CO1 · Analyze</span>
+        <h4>End-to-End ML Lifecycle</h4>
+        <p>CropWise mirrors the full pipeline traced by this outcome: raw soil and weather readings become model-ready features, pass through a trained classifier, and return as a prediction back to this interface.</p>
+      </div>
+      <div class="concept-card">
+        <span class="concept-tag">CO2 · Apply</span>
+        <h4>Multinomial Logistic Regression</h4>
+        <p>The recommendation engine is built specifically around multinomial logistic regression — extending logistic regression's linear scoring so the model can choose among many possible crops at once, not just two.</p>
+      </div>
+      <div class="concept-card">
+        <span class="concept-tag">CO5 · Analyze</span>
+        <h4>Evaluation Metrics</h4>
+        <p>The Model Performance section below reports accuracy, precision, recall, and F1 score — the same classification metrics this outcome covers for judging how well a trained model separates one crop from another.</p>
+      </div>
+      <div class="concept-card">
+        <span class="concept-tag">CO6 · Apply</span>
+        <h4>Serving Predictions</h4>
+        <p>The frontend's <code>getPrediction()</code> function is deliberately isolated from its mock logic so it can later call a packaged model — the same separation of a trained model from the interface that serves it.</p>
+      </div>
+    </div>
+    <p class="concept-footnote">
+      CO3 (tree-based models) and CO4 (unsupervised learning) are part of the broader course but sit
+      outside the multinomial logistic regression classifier this project is built around.
+    </p>
+  </div>
+</section>
+
+<!-- ================= MODEL PERFORMANCE ================= -->
+<section class="section" id="performance">
+  <div class="section-inner">
+    <div class="section-head">
+      <h2>Model Performance</h2>
+      <p>These figures populate automatically once the trained model is connected.</p>
+    </div>
+
+    <div class="metrics-grid" id="metricsGrid"><!-- generated by JS --></div>
+
+    <div class="performance-lower">
+      <div class="confusion-card">
+        <h3>Confusion Matrix</h3>
+        <div class="confusion-placeholder">
+          <p>Awaiting trained model</p>
+        </div>
+        <p class="confusion-note">
+          The confusion matrix shows how accurately the model distinguishes between different crops.
+        </p>
+      </div>
+
+      <div class="dataset-card">
+        <h3>Dataset Overview</h3>
+        <dl class="dataset-list">
+          <div><dt>Input Features</dt><dd>7</dd></div>
+          <div><dt>Target</dt><dd>Crop</dd></div>
+          <div><dt>Problem Type</dt><dd>Multi-Class Classification</dd></div>
+          <div><dt>Algorithm</dt><dd>Multinomial Logistic Regression</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- FUTURE ENHANCEMENTS -->
+    <div class="future-card">
+      <h3>Future Enhancements</h3>
+      <div class="future-grid">
+        <div class="future-item future-item-wide">
+          <h4>AQI Integration</h4>
+          <p>
+            Air Quality Index can potentially be added as an additional environmental feature
+            if historical AQI data is available for the training samples. AQI is not currently
+            part of the seven-feature model unless the dataset contains it.
+          </p>
+        </div>
+        <div class="future-item"><h4>Weather API</h4><p>Live environmental data at prediction time.</p></div>
+        <div class="future-item"><h4>Fertilizer Recommendations</h4><p>Suggested nutrients per crop.</p></div>
+        <div class="future-item"><h4>IoT Soil Sensors</h4><p>Direct sensor-fed field readings.</p></div>
+        <div class="future-item"><h4>Real-Time Monitoring</h4><p>Continuous environmental tracking.</p></div>
+        <div class="future-item"><h4>Location-Based Recommendations</h4><p>Region-aware predictions.</p></div>
+        <div class="future-item"><h4>Weather Forecasting</h4><p>Forward-looking condition estimates.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="section section-alt" id="about">
+  <div class="section-inner about-inner">
+    <div class="section-head">
+      <h2>About the Project</h2>
+      <p>
+        CropWise is a machine-learning-based crop recommendation interface designed to demonstrate
+        how soil and environmental data can be used to support agricultural decision-making.
+      </p>
+    </div>
+
+    <div class="tech-list">
+      <span class="tech-chip">Python</span>
+      <span class="tech-chip">Scikit-learn</span>
+      <span class="tech-chip">Multinomial Logistic Regression</span>
+      <span class="tech-chip">HTML</span>
+      <span class="tech-chip">CSS</span>
+      <span class="tech-chip">JavaScript</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#home" class="brand brand-footer">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+            <path d="M12 21c-4.5 0-7.5-3-7.5-7.5C4.5 8 8 4 12 3c4 1 7.5 5 7.5 10.5C19.5 18 16.5 21 12 21Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M12 21V9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </span>
+        CropWise
+      </a>
+      <p>Smart decisions. Better farming.</p>
+      <p class="footer-subtitle">Crop Recommendation Using Multinomial Logistic Regression</p>
+    </div>
+
+    <nav class="footer-links" aria-label="Footer">
+      <a href="#home">Home</a>
+      <a href="#recommend">Recommend</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#performance">Performance</a>
+      <a href="#about">About</a>
+    </nav>
+  </div>
+  <p class="footer-copy">© 2026 CropWise</p>
+</footer>
+
+<div class="tooltip-bubble" id="tooltipBubble" role="tooltip" hidden></div>
+
+<script src="script.js"></script>
+</body>
+</html>
