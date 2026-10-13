@@ -1,4 +1,17 @@
+"""
+CropWise — Streamlit version
+Crop Recommendation Using Multinomial Logistic Regression
 
+This mirrors the HTML/CSS/JS CropWise frontend, rebuilt in pure Python with
+Streamlit. Layout is organized the same way: Home, Recommend, How It Works,
+Performance, About — navigated with the buttons at the top instead of a
+website navbar.
+
+The prediction is a mock, exactly like the frontend version, and is kept in
+its own function (get_prediction) so it's a drop-in swap once a trained
+model is ready. See the docstring on get_prediction() below for the shape
+a real model should return.
+"""
 
 import random
 import time
@@ -393,39 +406,32 @@ def render_how_it_works():
                "on the dataset.")
 
     st.write("")
-    st.markdown("#### ML Concepts & Course Outcomes")
-    st.caption("How this project's design connects back to the course's learning outcomes.")
-    concepts = [
-        ("CO1 · Analyze", "End-to-End ML Lifecycle",
-         "CropWise mirrors the full pipeline traced by this outcome: raw soil and weather readings become "
-         "model-ready features, pass through a trained classifier, and return as a prediction back to this app."),
-        ("CO2 · Apply", "Multinomial Logistic Regression",
-         "The recommendation engine is built specifically around multinomial logistic regression — extending "
-         "logistic regression's linear scoring so the model can choose among many possible crops at once, not "
-         "just two."),
-        ("CO5 · Analyze", "Evaluation Metrics",
-         "The Model Performance page reports accuracy, precision, recall, and F1 score — the same "
-         "classification metrics this outcome covers for judging how well a trained model separates one crop "
-         "from another."),
-        ("CO6 · Apply", "Serving Predictions",
-         "The get_prediction() function is deliberately isolated from its mock logic so it can later call a "
-         "packaged model — the same separation of a trained model from the interface that serves it."),
+    st.markdown("#### How It Works, in Plain Words")
+    st.caption("No machine-learning background needed. Here's what happens between your readings and the answer.")
+    plain_steps = [
+        ("You describe your field",
+         "Enter seven readings: the nitrogen, phosphorus, and potassium in your soil, plus temperature, "
+         "humidity, soil pH, and rainfall."),
+        ("The model compares patterns",
+         "A machine-learning model scores every crop it knows against your readings, based on which "
+         "combinations of conditions tend to suit which crops."),
+        ("You get a ranked answer",
+         "The highest-scoring crop is recommended, and you can see how likely each of the other crops is, "
+         "so you know how clear-cut the result was."),
+        ("Treat it as guidance",
+         "It's a data-driven suggestion, not a guarantee. Local soil tests and advice from agricultural "
+         "experts should still shape the final decision."),
     ]
     cols = st.columns(2)
-    for i, (tag, title, desc) in enumerate(concepts):
+    for i, (title, desc) in enumerate(plain_steps):
         bg = PALETTE["sand"] if i % 2 == 0 else "rgba(15,61,46,0.06)"
-        tag_bg = PALETTE["bark"] if i % 2 == 0 else PALETTE["forest"]
         with cols[i % 2]:
             st.markdown(f"""
             <div style="background:{bg};border-radius:14px;padding:18px;margin-bottom:14px;">
-              <span style="display:inline-block;font-size:0.7rem;font-weight:700;color:white;background:{tag_bg};
-                           padding:3px 10px;border-radius:999px;margin-bottom:10px;">{tag}</span>
               <div style="font-weight:700;margin-bottom:6px;">{title}</div>
-              <div style="font-size:0.85rem;color:{PALETTE['muted']};">{desc}</div>
+              <div style="font-size:0.88rem;color:{PALETTE['muted']};">{desc}</div>
             </div>
             """, unsafe_allow_html=True)
-    st.caption("CO3 (tree-based models) and CO4 (unsupervised learning) are part of the broader course but sit "
-               "outside the multinomial logistic regression classifier this project is built around.")
 
 
 # ==============================================================================
